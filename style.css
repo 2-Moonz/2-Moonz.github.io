@@ -1,0 +1,49 @@
+/* style.css */
+body {
+    background: url('/images/Background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 3px 10px rgba(0, 0, 0, 0.3);
+    color: #443C68;
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+    backdrop-filter: blur(10px);
+    font-family: 'Lacquer', sans-serif;
+}
+
+.card h1 {
+    color: #393053;
+}
+
+.card img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.icons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.icons a {
+    color: #443C68;
+    transition: transform 0.3s ease;
+}
+
+.icons a:hover {
+    transform: scale(1.2);
+}
