@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Lucky Casino</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 4rem;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .balance-section {
+            background: linear-gradient(145deg, #2a2a4a, #1e1e3a);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .balance-title {
+            font-size: 2rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .balance-amount {
+            font-size: 3rem;
+            color: #00ff88;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .bet-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .game-card {
+            background: linear-gradient(145deg, #2a2a4a, #1e1e3a);
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .game-display {
+            font-size: 4rem;
+            margin: 20px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        button {
+            background: linear-gradient(145deg, #ffd700, #ffed4a);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        button:hover:not(:disabled) {
+            background: linear-gradient(145deg, #ffed4a, #ffd700);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .game-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            margin: 20px 0;
+        }
+
+        input {
+            background: #1a1a2e;
+            border: 2px solid #444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .choice-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .choice-button {
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #444, #333);
+            color: #fff;
+        }
+
+        .choice-button.selected {
+            background: linear-gradient(145deg, #ffd700, #ffed4a);
+            color: #000;
+        }
+
+        .game-info {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 15px;
+        }
+
+        .warning {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2a2a4a;
+            border: 2px solid;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.win {
+            border-color: #00ff88;
+            background: linear-gradient(145deg, #004d2a, #002a1a);
+        }
+
+        .toast.lose {
+            border-color: #ff4444;
+            background: linear-gradient(145deg, #4d0000, #2a0000);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🎰 LUCKY CASINO 🎰</h1>
+            <p class="subtitle">Try your luck with fake money!</p>
+        </div>
+
+        <div class="balance-section">
+            <h2 class="balance-title">Your Balance</h2>
+            <div class="balance-amount" id="balance">$1000</div>
+            <div class="bet-controls">
+                <label>Bet Amount:</label>
+                <input type="number" id="betAmount" value="10" min="1" style="width: 80px;">
+                <button onclick="resetBalance()">Reset Balance</button>
+            </div>
+        </div>
+
+        <div class="games-grid">
+            <!-- Coin Flip Game -->
+            <div class="game-card">
+                <h3 class="game-title">🪙 Coin Flip</h3>
+                <div class="game-display" id="coinDisplay">🪙</div>
+                <div class="choice-buttons">
+                    <button class="choice-button selected" id="headsBtn" onclick="selectCoinSide('heads')">👑 Heads</button>
+                    <button class="choice-button" id="tailsBtn" onclick="selectCoinSide('tails')">🪙 Tails</button>
+                </div>
+                <button class="game-button" onclick="flipCoin()" id="flipBtn">Flip for $10</button>
+                <div class="game-info">Win: 1.8x your bet | Odds: 50%</div>
+            </div>
+
+            <!-- Dice Game -->
+            <div class="game-card">
+                <h3 class="game-title">🎲 Dice Roll</h3>
+                <div class="game-display" id="diceDisplay">⚀⚀</div>
+                <div>
+                    <label>Guess the sum (2-12):</label><br>
+                    <input type="number" id="diceGuess" value="7" min="2" max="12" style="width: 80px; margin: 10px;">
+                </div>
+                <button class="game-button" onclick="rollDice()" id="diceBtn">Roll for $10</button>
+                <div class="game-info">Win: 4x your bet | Guess the exact sum!</div>
+            </div>
+
+            <!-- Slot Machine -->
+            <div class="game-card">
+                <h3 class="game-title">🎰 Slot Machine</h3>
+                <div class="game-display" id="slotDisplay">🍒🍒🍒</div>
+                <button class="game-button" onclick="spinSlots()" id="slotBtn">Spin for $10</button>
+                <div class="game-info">
+                    <div>💎💎💎 = 5x | ⭐⭐⭐ = 4x | 🍇🍇🍇 = 3x</div>
+                    <div>Other triples = 2x | Two match = 1.2x</div>
+                    <div class="warning">⚠️ House Edge: You'll likely lose money!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 1000;
+        let selectedCoinSide = 'heads';
+        const symbols = ['🍒', '🍋', '🍊', '🍇', '🍎', '🥝', '🍓', '🥭', '⭐', '💎'];
+
+        // Load balance from localStorage
+        function loadBalance() {
+            const saved = localStorage.getItem('casinoBalance');
+            if (saved) {
+                balance = parseInt(saved);
+                updateBalanceDisplay();
+            }
+        }
+
+        function saveBalance() {
+            localStorage.setItem('casinoBalance', balance.toString());
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('balance').textContent = '$' + balance;
+            updateButtonTexts();
+        }
+
+        function updateButtonTexts() {
+            const bet = getBetAmount();
+            document.getElementById('flipBtn').textContent = `Flip for $${bet}`;
+            document.getElementById('diceBtn').textContent = `Roll for $${bet}`;
+            document.getElementById('slotBtn').textContent = `Spin for $${bet}`;
+        }
+
+        function getBetAmount() {
+            return Math.max(1, parseInt(document.getElementById('betAmount').value) || 1);
+        }
+
+        function showToast(title, message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<strong>${title}</strong><br>${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        function resetBalance() {
+            balance = 1000;
+            saveBalance();
+            updateBalanceDisplay();
+            showToast('Balance Reset!', `Your balance has been reset to $1000`, 'win');
+        }
+
+        function selectCoinSide(side) {
+            selectedCoinSide = side;
+            document.getElementById('headsBtn').classList.toggle('selected', side === 'heads');
+            document.getElementById('tailsBtn').classList.toggle('selected', side === 'tails');
+        }
+
+        function flipCoin() {
+            const bet = getBetAmount();
+            if (bet > balance) {
+                showToast('Insufficient funds!', "You don't have enough money for this bet.", 'lose');
+                return;
+            }
+
+            balance -= bet;
+            updateBalanceDisplay();
+            
+            const display = document.getElementById('coinDisplay');
+            display.classList.add('spinning');
+            display.textContent = '🪙';
+            document.getElementById('flipBtn').disabled = true;
+
+            setTimeout(() => {
+                const result = Math.random() < 0.5 ? 'heads' : 'tails';
+                display.classList.remove('spinning');
+                display.textContent = result === 'heads' ? '👑' : '🪙';
+                document.getElementById('flipBtn').disabled = false;
+
+                if (result === selectedCoinSide) {
+                    const winnings = Math.floor(bet * 1.8);
+                    balance += winnings;
+                    showToast('You Won! 🎉', `You won $${winnings}!`, 'win');
+                } else {
+                    showToast('You Lost! 😞', `You lost $${bet}`, 'lose');
+                }
+                
+                saveBalance();
+                updateBalanceDisplay();
+            }, 1000);
+        }
+
+        function rollDice() {
+            const bet = getBetAmount();
+            const guess = parseInt(document.getElementById('diceGuess').value);
+            
+            if (bet > balance) {
+                showToast('Insufficient funds!', "You don't have enough money for this bet.", 'lose');
+                return;
+            }
+
+            balance -= bet;
+            updateBalanceDisplay();
+            
+            const display = document.getElementById('diceDisplay');
+            const diceEmojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            display.classList.add('spinning');
+            document.getElementById('diceBtn').disabled = true;
+
+            setTimeout(() => {
+                const dice1 = Math.floor(Math.random() * 6) + 1;
+                const dice2 = Math.floor(Math.random() * 6) + 1;
+                const sum = dice1 + dice2;
+                
+                display.classList.remove('spinning');
+                display.textContent = diceEmojis[dice1-1] + diceEmojis[dice2-1];
+                document.getElementById('diceBtn').disabled = false;
+
+                if (sum === guess) {
+                    const winnings = bet * 4;
+                    balance += winnings;
+                    showToast('Jackpot! 🎉', `You guessed ${sum} correctly and won $${winnings}!`, 'win');
+                } else {
+                    showToast('Try Again! 🎲', `You rolled ${sum}, but guessed ${guess}`, 'lose');
+                }
+                
+                saveBalance();
+                updateBalanceDisplay();
+            }, 1000);
+        }
+
+        function spinSlots() {
+            const bet = getBetAmount();
+            
+            if (bet > balance) {
+                showToast('Insufficient funds!', "You don't have enough money for this bet.", 'lose');
+                return;
+            }
+
+            balance -= bet;
+            updateBalanceDisplay();
+            
+            const display = document.getElementById('slotDisplay');
+            display.classList.add('spinning');
+            display.textContent = '🔄🔄🔄';
+            document.getElementById('slotBtn').disabled = true;
+
+            setTimeout(() => {
+                const slot1 = symbols[Math.floor(Math.random() * symbols.length)];
+                const slot2 = symbols[Math.floor(Math.random() * symbols.length)];
+                const slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                display.classList.remove('spinning');
+                display.textContent = slot1 + slot2 + slot3;
+                document.getElementById('slotBtn').disabled = false;
+
+                // Check for wins
+                if (slot1 === slot2 && slot2 === slot3) {
+                    let multiplier = 2;
+                    if (slot1 === '💎') multiplier = 5;
+                    else if (slot1 === '⭐') multiplier = 4;
+                    else if (slot1 === '🍇') multiplier = 3;
+                    
+                    const winnings = bet * multiplier;
+                    balance += winnings;
+                    showToast('JACKPOT! 🎰', `Three ${slot1}! You won $${winnings}!`, 'win');
+                } else if (slot1 === slot2 || slot2 === slot3 || slot1 === slot3) {
+                    const winnings = Math.floor(bet * 1.2);
+                    balance += winnings;
+                    showToast('Small Win! 🎉', `Two matching symbols! You won $${winnings}!`, 'win');
+                } else {
+                    showToast('No Match 😞', 'Better luck next time!', 'lose');
+                }
+                
+                saveBalance();
+                updateBalanceDisplay();
+            }, 1500);
+        }
+
+        // Event listeners
+        document.getElementById('betAmount').addEventListener('input', updateButtonTexts);
+
+        // Initialize
+        loadBalance();
+        updateBalanceDisplay();
+    </script>
+</body>
+</html>
